@@ -197,8 +197,8 @@ const options_entry emu_options::s_option_entries[] =
 	// MKChamp Hiscore Diff options 
   { NULL,                        											 NULL,        OPTION_HEADER,     "CORE MKChamp OPTIONS" },
   { OPTION_DISABLE_HISCORE_PATCH, 										 "0",         OPTION_BOOLEAN,    "disable hiscore saving" },
-  { OPTION_DISABLE_NAGSCREEN_PATCH,  									 "0",         OPTION_BOOLEAN,    "disable suppression of nagscreens" },
-  { OPTION_DISABLE_LOADING_PATCH,    									 "0",         OPTION_BOOLEAN,    "disable suppression of loading screens /white box" },
+  { OPTION_DISABLE_NAGSCREEN_PATCH,  									 "1",         OPTION_BOOLEAN,    "disable suppression of nagscreens" },
+  { OPTION_DISABLE_LOADING_PATCH,    									 "1",         OPTION_BOOLEAN,    "disable suppression of loading screens /white box" },
   { NULL }
 };
 

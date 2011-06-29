@@ -351,6 +351,35 @@ void sdl_osd_interface::update(bool skip_redraw)
 
 
 //============================================================
+//  update_hi
+//============================================================
+
+void sdl_osd_interface::update_hi(bool skip_redraw)
+{
+	sdl_window_info *window;
+
+	if (m_watchdog != NULL)
+		m_watchdog->reset();
+
+	// if we're not skipping this redraw, update all windows
+	if (!skip_redraw)
+	{
+//      profiler_mark(PROFILER_BLIT);
+		for (window = sdl_window_list; window != NULL; window = window->next)
+			sdlwindow_video_window_update_hi(machine(), window);
+//      profiler_mark(PROFILER_END);
+	}
+
+	// poll the joystick values here
+	sdlinput_poll(machine());
+	check_osd_inputs(machine());
+
+	if ((machine().debug_flags & DEBUG_FLAG_OSD_ENABLED) != 0)
+		debugwin_update_during_game(machine());
+}
+
+
+//============================================================
 //  add_primary_monitor
 //============================================================
 

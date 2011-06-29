@@ -242,6 +242,7 @@ public:
 	// general overridables
 	virtual void init(running_machine &machine);
 	virtual void update(bool skip_redraw);
+	virtual void update_hi(bool skip_redraw);
 
 	// debugger overridables
 	virtual void init_debugger();

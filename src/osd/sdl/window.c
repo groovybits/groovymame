@@ -1006,6 +1006,21 @@ void sdlwindow_video_window_update(running_machine &machine, sdl_window_info *wi
 
 
 //============================================================
+//  sdlwindow_video_window_update_hi
+//  (main thread)
+//============================================================
+
+void sdlwindow_video_window_update_hi(running_machine &machine, sdl_window_info *window)
+{
+
+	ASSERT_MAIN_THREAD();
+
+	// adjust the cursor state
+	sdlwindow_update_cursor_state(machine, window);
+}
+
+
+//============================================================
 //  set_starting_view
 //  (main thread)
 //============================================================

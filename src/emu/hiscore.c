@@ -349,7 +349,7 @@ void hiscore_init (running_machine &machine)
 	}
 
 	state.mem_range = NULL;
-	emu_file f(OPEN_FLAG_READ);
+	emu_file f(machine.options().hiscore_directory(), OPEN_FLAG_READ);
   filerr = f.open(db_filename, ".dat");
 	if(filerr == FILERR_NONE)
 	{
