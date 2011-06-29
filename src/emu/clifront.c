@@ -1315,8 +1315,8 @@ void cli_frontend::execute_commands(const char *exename)
 
 void cli_frontend::display_help()
 {
-	mame_printf_info(APPLONGNAME " v%s - " FULLLONGNAME "\n"
-		   COPYRIGHT_INFO "\n\n", build_version);
+	mame_printf_info(APPLONGNAME " v%s SwitchRes Patch %s - " FULLLONGNAME "\n"
+		   COPYRIGHT_INFO "\n\n", build_version, SWITCHRES_VERSION);
 	mame_printf_info("%s\n", DISCLAIMER);
 	mame_printf_info(USAGE "\n\n"
 		   "        " APPNAME " -showusage    for a brief list of options\n"

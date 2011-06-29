@@ -1286,10 +1286,32 @@ const render_screen_list &render_target::view_screens(int viewindex)
 void render_target::compute_visible_area(INT32 target_width, INT32 target_height, float target_pixel_aspect, int target_orientation, INT32 &visible_width, INT32 &visible_height)
 {
 	float width, height;
-	float scale;
+	float xscale, yscale;
+
+	if (m_manager.machine().switchRes.cs.cleanstretch) {
+		INT32 iwidth, iheight;
+
+		compute_minimum_size( iwidth, iheight);
+		width = iwidth;
+		height = iheight;
+
+		xscale = (int)target_width % (int)width;
+		yscale = (int)target_height % (int)height;
+
+		target_width -= xscale;
+		target_height -= yscale;
+
+		xscale = (int)target_width / (int)width;
+		yscale = (int)target_height / (int)height;
+
+		if (xscale > yscale)
+			xscale = yscale;
+		if (yscale > xscale)
+			yscale = xscale;
+	}
 
 	// constrained case
-	if (target_pixel_aspect != 0.0f)
+	else if (target_pixel_aspect != 0.0f)
 	{
 		// start with the aspect ratio of the square pixel layout
 		width = m_curview->effective_aspect(m_layerconfig);
@@ -1304,9 +1326,9 @@ void render_target::compute_visible_area(INT32 target_width, INT32 target_height
 
 		// based on the height/width ratio of the source and target, compute the scale factor
 		if (width / height > (float)target_width / (float)target_height)
-			scale = (float)target_width / width;
+			xscale = yscale = (float)target_width / width;
 		else
-			scale = (float)target_height / height;
+			xscale = yscale = (float)target_height / height;
 	}
 
 	// stretch-to-fit case
@@ -1314,12 +1336,18 @@ void render_target::compute_visible_area(INT32 target_width, INT32 target_height
 	{
 		width = (float)target_width;
 		height = (float)target_height;
-		scale = 1.0f;
+		xscale = yscale = 1.0f;
 	}
 
+	// frogger/galaxian hack
+	if (width == 224 && height == 768)
+		height = 256;
+	if (width == 768 && height == 224)
+		width = 256;
+
 	// set the final width/height
-	visible_width = render_round_nearest(width * scale);
-	visible_height = render_round_nearest(height * scale);
+	visible_width = render_round_nearest(width * xscale);
+	visible_height = render_round_nearest(height * yscale);
 }
 
 
@@ -1392,6 +1420,12 @@ void render_target::compute_minimum_size(INT32 &minwidth, INT32 &minheight)
 	// round up
 	minwidth = render_round_nearest(maxxscale);
 	minheight = render_round_nearest(maxyscale);
+
+	// frogger/galaxian hack
+	if (minwidth == 224 && minheight == 768)
+		minheight = 256;
+	if (minwidth == 768 && minheight == 224)
+		minwidth = 256;
 }
 
 
@@ -1417,6 +1451,27 @@ render_primitive_list &render_target::get_primitives()
 	// compute the visible width/height
 	INT32 viswidth, visheight;
 	compute_visible_area(m_width, m_height, m_pixel_aspect, m_orientation, viswidth, visheight);
+
+	// Check for resolution changes
+	if (m_manager.machine().switchRes.resolution.width != 0) {
+		if (m_manager.machine().switchRes.resolution.width != viswidth ||
+		  m_manager.machine().switchRes.resolution.height != visheight)
+		{
+			mame_printf_verbose("SwitchRes: [%d] Resolution change from %dx%d to %dx%d\n",
+				m_manager.machine().switchRes.cs.changeres,
+				m_manager.machine().switchRes.resolution.width,
+				m_manager.machine().switchRes.resolution.height,
+				viswidth, visheight);
+
+			m_manager.machine().switchRes.resolution.width = viswidth;
+			m_manager.machine().switchRes.resolution.height = visheight;
+
+			m_manager.machine().switchRes.resolution.changeres = 1;
+		}
+	} else {
+		m_manager.machine().switchRes.resolution.width = viswidth;
+		m_manager.machine().switchRes.resolution.height = visheight;
+	}
 
 	// create a root transform for the target
 	object_transform root_xform;

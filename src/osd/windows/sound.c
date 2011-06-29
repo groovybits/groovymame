@@ -61,6 +61,8 @@
 #include "config.h"
 #include "sound.h"
 
+extern running_machine *g_current_machine;
+
 
 //============================================================
 //  DEBUGGING
@@ -202,6 +204,13 @@ void windows_osd_interface::update_audio_stream(const INT16 *buffer, int samples
 	// if no sound, there is no buffer
 	if (stream_buffer == NULL)
 		return;
+
+	// if we are active, update the sampling frequency
+	if (g_current_machine->speed_percent > 0.0f && g_current_machine->switchRes.cs.soundsync)
+	{
+		IDirectSoundBuffer_SetFrequency(stream_buffer,
+			g_current_machine->sample_rate() * g_current_machine->speed_percent);
+	}
 
 	// determine the current play position
 	result = IDirectSoundBuffer_GetCurrentPosition(stream_buffer, &play_position, &write_position);
@@ -392,7 +401,7 @@ static HRESULT dsound_create_buffers(void)
 	// create a buffer desc for the stream buffer
 	memset(&stream_desc, 0, sizeof(stream_desc));
 	stream_desc.dwSize = sizeof(stream_desc);
-	stream_desc.dwFlags = DSBCAPS_CTRLVOLUME | DSBCAPS_GLOBALFOCUS | DSBCAPS_GETCURRENTPOSITION2;
+	stream_desc.dwFlags = DSBCAPS_CTRLVOLUME | DSBCAPS_GLOBALFOCUS | DSBCAPS_GETCURRENTPOSITION2 | DSBCAPS_CTRLFREQUENCY;
 	stream_desc.dwBufferBytes = stream_buffer_size;
 	stream_desc.lpwfxFormat	= &stream_format;
 

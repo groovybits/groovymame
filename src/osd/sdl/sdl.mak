@@ -283,7 +283,8 @@ OSDOBJS = \
 	$(SDLOBJ)/drawsdl.o \
 	$(SDLOBJ)/window.o \
 	$(SDLOBJ)/output.o \
-	$(SDLOBJ)/watchdog.o
+	$(SDLOBJ)/watchdog.o \
+	$(SDLOBJ)/switchres.o
 
 # Add SDL1.3 support
 ifdef SDL_INSTALL_ROOT

@@ -74,6 +74,8 @@ extern int drawgdi_init(running_machine &machine, win_draw_callbacks *callbacks)
 extern int drawdd_init(running_machine &machine, win_draw_callbacks *callbacks);
 extern int drawd3d_init(running_machine &machine, win_draw_callbacks *callbacks);
 
+extern bool switchres_resolution_change(win_window_info *window);
+
 
 //============================================================
 //  PARAMETERS
@@ -103,6 +105,7 @@ extern int drawd3d_init(running_machine &machine, win_draw_callbacks *callbacks)
 #define WM_USER_SET_MINSIZE				(WM_USER + 5)
 #define WM_USER_UI_TEMP_PAUSE			(WM_USER + 6)
 #define WM_USER_EXEC_FUNC				(WM_USER + 7)
+#define WM_USER_CHANGERES                      (WM_USER + 8)
 
 
 
@@ -765,6 +768,13 @@ void winwindow_video_window_update(win_window_info *window)
 
 	mtlog_add("winwindow_video_window_update: begin");
 
+	// Resolution change
+	if (window->machine().options().changeres() 
+		&& window->machine().switchRes.resolution.changeres)
+	{
+		switchres_resolution_change(window);
+	}
+
 	// see if the target has changed significantly in window mode
 	targetview = window->target->view();
 	targetorient = window->target->orientation();
@@ -793,7 +803,7 @@ void winwindow_video_window_update(win_window_info *window)
 		mtlog_add("winwindow_video_window_update: try lock");
 
 		// only block if we're throttled
-		if (window->machine().video().throttled() || timeGetTime() - last_update_time > 250)
+		if (timeGetTime() - last_update_time > 250)
 			osd_lock_acquire(window->render_lock);
 		else
 			got_lock = osd_lock_try(window->render_lock);
@@ -815,7 +825,14 @@ void winwindow_video_window_update(win_window_info *window)
 			last_update_time = timeGetTime();
 			mtlog_add("winwindow_video_window_update: PostMessage start");
 			if (multithreading_enabled)
-				PostMessage(window->hwnd, WM_USER_REDRAW, 0, (LPARAM)primlist);
+			{
+				if ((video_config.waitvsync) && video_config.mode != VIDEO_MODE_GDI)
+				{
+					window->primlist = primlist;
+					draw_video_contents(window, NULL, FALSE);
+				} else
+					PostMessage(window->hwnd, WM_USER_REDRAW, 0, (LPARAM)primlist);
+			}
 			else
 				SendMessage(window->hwnd, WM_USER_REDRAW, 0, (LPARAM)primlist);
 			mtlog_add("winwindow_video_window_update: PostMessage end");
@@ -1491,6 +1508,12 @@ LRESULT CALLBACK winwindow_video_window_proc(HWND wnd, UINT message, WPARAM wpar
 		// fullscreen set
 		case WM_USER_SET_FULLSCREEN:
 			set_fullscreen(window, wparam);
+			break;
+
+		// Resolution change
+		case WM_USER_CHANGERES:
+			(*draw.window_destroy)(window);
+			(*draw.window_init)(window);
 			break;
 
 		// minimum size set

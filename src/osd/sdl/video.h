@@ -82,7 +82,7 @@ struct _sdl_window_config
 	int					width;						// decoded width
 	int					height;						// decoded height
 	int					depth;						// decoded depth
-	int					refresh;					// decoded refresh
+	double					refresh;					// decoded refresh
 
 	int					totalColors;		 // total colors from machine
 };

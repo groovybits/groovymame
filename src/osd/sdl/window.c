@@ -72,7 +72,8 @@
 //============================================================
 
 sdl_window_info *sdl_window_list;
-
+extern bool switchres_resolution_reset(running_machine &machine, sdl_window_info *window);
+extern bool switchres_resolution_change(running_machine &machine, sdl_window_info *window, int width, int height);
 
 //============================================================
 //  LOCAL VARIABLES
@@ -304,6 +305,7 @@ static void sdlwindow_exit(running_machine &machine)
 	{
 		sdl_window_info *temp = sdl_window_list;
 		sdl_window_list = temp->next;
+		switchres_resolution_reset(machine, temp);
 		sdlwindow_video_window_destroy(machine, temp);
 	}
 
@@ -799,7 +801,7 @@ static void sdlwindow_video_window_destroy(running_machine &machine, sdl_window_
 //============================================================
 
 #if SDL_VERSION_ATLEAST(1,3,0)
-static void pick_best_mode(sdl_window_info *window, int *fswidth, int *fsheight)
+void pick_best_mode(sdl_window_info *window, int *fswidth, int *fsheight)
 {
 	int minimum_width, minimum_height, target_width, target_height;
 	int i;
@@ -866,7 +868,7 @@ static void pick_best_mode(sdl_window_info *window, int *fswidth, int *fsheight)
 	}
 }
 #else
-static void pick_best_mode(sdl_window_info *window, int *fswidth, int *fsheight)
+void pick_best_mode(sdl_window_info *window, int *fswidth, int *fsheight)
 {
 	int minimum_width, minimum_height, target_width, target_height;
 	int i;
@@ -962,7 +964,12 @@ void sdlwindow_video_window_update(running_machine &machine, sdl_window_info *wi
 
 		// see if the games video mode has changed
 		window->target->compute_minimum_size(tempwidth, tempheight);
-		if (tempwidth != window->minwidth || tempheight != window->minheight)
+		if (video_config.switchres && window->fullscreen && machine.options().changeres())
+		{
+			if (machine.switchRes.resolution.changeres) 
+				switchres_resolution_change(machine, window, tempwidth, tempheight);
+		}
+		else if (tempwidth != window->minwidth || tempheight != window->minheight)
 		{
 			window->minwidth = tempwidth;
 			window->minheight = tempheight;

@@ -421,6 +421,10 @@ public:
 	// debugger-related information
 	UINT32					debug_flags;		// the current debug flags
 
+	// SwitchRes patch
+	SwitchRes                               switchRes;
+	double                                  speed_percent;
+
 	// generic pointers
 	generic_pointers		generic;			// generic pointers
 

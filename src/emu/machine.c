@@ -195,6 +195,7 @@ running_machine::running_machine(const machine_config &_config, osd_interface &o
 	memset(gfx, 0, sizeof(gfx));
 	memset(&generic, 0, sizeof(generic));
 	memset(&m_base_time, 0, sizeof(m_base_time));
+	memset(&switchRes, 0, sizeof(switchRes));
 
 	// set the machine on all devices
 	const_cast<device_list &>(devicelist()).set_machine_all(*this);
@@ -269,6 +270,9 @@ void running_machine::start()
 
 	// allocate a soft_reset timer
 	m_soft_reset_timer = m_scheduler.timer_alloc(timer_expired_delegate(FUNC(running_machine::soft_reset), this));
+
+	// Switchres
+	SetMameOptions(*this);
 
 	// init the osd layer
 	m_osd.init(*this);

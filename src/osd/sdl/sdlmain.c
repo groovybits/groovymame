@@ -76,6 +76,9 @@
 //  Global variables
 //============================================================
 
+extern bool switchres_modeline_setup(running_machine &machine);
+extern bool switchres_modeline_remove(running_machine &machine);
+
 //============================================================
 //  Local variables
 //============================================================
@@ -91,28 +94,23 @@ const options_entry sdl_options::s_option_entries[] =
 
 	// performance options
 	{ NULL,                                   NULL,       OPTION_HEADER,     "PERFORMANCE OPTIONS" },
-	{ SDLOPTION_MULTITHREADING ";mt",         "0",        OPTION_BOOLEAN,    "enable multithreading; this enables rendering and blitting on a separate thread" },
+	{ SDLOPTION_MULTITHREADING ";mt",         "1",        OPTION_BOOLEAN,    "enable multithreading; this enables rendering and blitting on a separate thread" },
 	{ SDLOPTION_NUMPROCESSORS ";np",         "auto",      OPTION_INTEGER,	 "number of processors; this overrides the number the system reports" },
 	{ SDLOPTION_SDLVIDEOFPS,                  "0",        OPTION_BOOLEAN,    "show sdl video performance" },
 	{ SDLOPTION_BENCH,                        "0",        OPTION_INTEGER,    "benchmark for the given number of emulated seconds; implies -video none -nosound -nothrottle" },
 	// video options
 	{ NULL,                                   NULL,       OPTION_HEADER,     "VIDEO OPTIONS" },
-// OS X can be trusted to have working hardware OpenGL, so default to it on for the best user experience
-#ifdef SDLMAME_MACOSX
 	{ SDLOPTION_VIDEO,                   SDLOPTVAL_OPENGL,  OPTION_STRING,   "video output method: soft or opengl" },
-#else
-	{ SDLOPTION_VIDEO,                   SDLOPTVAL_SOFT,  OPTION_STRING,     "video output method: soft or opengl" },
-#endif
 	{ SDLOPTION_NUMSCREENS,                   "1",        OPTION_INTEGER,    "number of screens to create; SDLMAME only supports 1 at this time" },
 	{ SDLOPTION_WINDOW ";w",                  "0",        OPTION_BOOLEAN,    "enable window mode; otherwise, full screen mode is assumed" },
 	{ SDLOPTION_MAXIMIZE ";max",              "1",        OPTION_BOOLEAN,    "default to maximized windows; otherwise, windows will be minimized" },
-	{ SDLOPTION_KEEPASPECT ";ka",             "1",        OPTION_BOOLEAN,    "constrain to the proper aspect ratio" },
-	{ SDLOPTION_UNEVENSTRETCH ";ues",         "1",        OPTION_BOOLEAN,    "allow non-integer stretch factors" },
+	{ SDLOPTION_KEEPASPECT ";ka",             "0",        OPTION_BOOLEAN,    "constrain to the proper aspect ratio" },
+	{ SDLOPTION_UNEVENSTRETCH ";ues",         "0",        OPTION_BOOLEAN,    "allow non-integer stretch factors" },
 	{ SDLOPTION_CENTERH,                      "1",        OPTION_BOOLEAN,    "center horizontally within the view area" },
 	{ SDLOPTION_CENTERV,                      "1",        OPTION_BOOLEAN,    "center vertically within the view area" },
 	#if (SDL_VERSION_ATLEAST(1,2,10))
-	{ SDLOPTION_WAITVSYNC,                    "0",        OPTION_BOOLEAN,    "enable waiting for the start of VBLANK before flipping screens; reduces tearing effects" },
-	{ SDLOPTION_SYNCREFRESH,                  "0",        OPTION_BOOLEAN,    "enable using the start of VBLANK for throttling instead of the game time" },
+	{ SDLOPTION_WAITVSYNC,                    "1",        OPTION_BOOLEAN,    "enable waiting for the start of VBLANK before flipping screens; reduces tearing effects" },
+	{ SDLOPTION_SYNCREFRESH,                  "1",        OPTION_BOOLEAN,    "enable using the start of VBLANK for throttling instead of the game time" },
 	#endif
 #if (SDL_VERSION_ATLEAST(1,3,0))
 	{ SDLOPTION_SCALEMODE ";sm",         SDLOPTVAL_NONE,  OPTION_STRING,     "Scale mode: none, hwblit, hwbest, yv12, yuy2, yv12x2, yuy2x2 (-video soft only)" },
@@ -122,7 +120,7 @@ const options_entry sdl_options::s_option_entries[] =
 #if USE_OPENGL
 	// OpenGL specific options
 	{ NULL,                                   NULL,   OPTION_HEADER,  "OpenGL-SPECIFIC OPTIONS" },
-	{ SDLOPTION_FILTER ";glfilter;flt",       "1",    OPTION_BOOLEAN, "enable bilinear filtering on screen output" },
+	{ SDLOPTION_FILTER ";glfilter;flt",       "0",    OPTION_BOOLEAN, "enable bilinear filtering on screen output" },
 	{ SDLOPTION_PRESCALE,                     "1",    OPTION_INTEGER,                 "scale screen rendering by this amount in software" },
 	{ SDLOPTION_GL_FORCEPOW2TEXTURE,          "0",    OPTION_BOOLEAN, "force power of two textures  (default no)" },
 	{ SDLOPTION_GL_NOTEXTURERECT,             "0",    OPTION_BOOLEAN, "don't use OpenGL GL_ARB_texture_rectangle (default on)" },
@@ -182,7 +180,7 @@ const options_entry sdl_options::s_option_entries[] =
 
 	// full screen options
 	{ NULL,                                   NULL,  OPTION_HEADER,     "FULL SCREEN OPTIONS" },
-	{ SDLOPTION_SWITCHRES,                    "0",   OPTION_BOOLEAN,    "enable resolution switching" },
+	{ SDLOPTION_SWITCHRES,                    "1",   OPTION_BOOLEAN,    "enable resolution switching" },
 	#ifdef SDLMAME_X11
 	{ SDLOPTION_USEALLHEADS,	             "0",	  OPTION_BOOLEAN,    "split full screen image across monitors" },
 	#endif
@@ -415,6 +413,10 @@ void sdl_osd_interface::osd_exit(running_machine &machine)
 
 	if (!SDLMAME_INIT_IN_WORKER_THREAD)
 		SDL_Quit();
+
+	// SwitchRes modeline removal
+	if (machine.options().modeline())
+		switchres_modeline_remove(machine);
 }
 
 //============================================================
@@ -542,6 +544,10 @@ void sdl_osd_interface::init(running_machine &machine)
 
 	sdl_options &options = downcast<sdl_options &>(machine.options());
 	const char *stemp;
+
+	// Switchres
+	if (machine.options().modeline())
+		switchres_modeline_setup(machine);
 
 	// determine if we are benchmarking, and adjust options appropriately
 	int bench = options.bench();

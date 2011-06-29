@@ -203,6 +203,30 @@ enum
 #define OPTION_DISABLE_LOADING_PATCH		"disable_loading_patch"
 
 
+/* Switchres Options */
+#define OPTION_MODELINE                        "modeline"
+#define OPTION_MONITOR                         "monitor"
+#define OPTION_MONITOR_CONNECTOR               "monitor_connector"
+#define OPTION_MONITOR_ORIENTATION             "monitor_orientation"
+#define OPTION_MONITOR_ASPECT                  "monitor_aspect"
+#define OPTION_MONITOR_DEBUG                   "monitor_debug"
+#define OPTION_MONITOR_DOUBLESCAN              "monitor_doublescan"
+#define OPTION_MONITOR_DOTCLOCK                "monitor_dotclock"
+#define OPTION_MONITOR_YMIN                    "monitor_ymin"
+#define OPTION_SOUNDSYNC                       "soundsync"
+#define OPTION_CLEANSTRETCH                    "cleanstretch"
+#define OPTION_CHANGERES                       "changeres"
+#define OPTION_REDRAW                          "redraw"
+#define OPTION_MONITOR_SPECS0                  "monitor_specs0"
+#define OPTION_MONITOR_SPECS1                  "monitor_specs1"
+#define OPTION_MONITOR_SPECS2                  "monitor_specs2"
+#define OPTION_MONITOR_SPECS3                  "monitor_specs3"
+#define OPTION_MONITOR_SPECS4                  "monitor_specs4"
+#define OPTION_MONITOR_SPECS5                  "monitor_specs5"
+#define OPTION_MONITOR_SPECS6                  "monitor_specs6"
+#define OPTION_MONITOR_SPECS7                  "monitor_specs7"
+
+
 //**************************************************************************
 //  TYPE DEFINITIONS
 //**************************************************************************
@@ -358,6 +382,29 @@ public:
 	bool disable_loading_patch() const { return bool_value(OPTION_DISABLE_LOADING_PATCH); }
 
 	bool confirm_quit() const { return bool_value(OPTION_CONFIRM_QUIT); }
+
+	// Switchres options
+	bool modeline() const { return bool_value(OPTION_MODELINE); };
+	const char *monitor() const { return value(OPTION_MONITOR); };
+	const char *monitor_connector() const { return value(OPTION_MONITOR_CONNECTOR); };
+	const char *monitor_orientation() const { return value(OPTION_MONITOR_ORIENTATION); };
+	const char *monitor_aspect() const { return value(OPTION_MONITOR_ASPECT); };
+	const char *monitor_debug() const { return value(OPTION_MONITOR_DEBUG); };
+	bool monitor_doublescan() const { return bool_value(OPTION_MONITOR_DOUBLESCAN); };
+	const char *monitor_dotclock() const { return value(OPTION_MONITOR_DOTCLOCK); };
+	const char *monitor_ymin() const { return value(OPTION_MONITOR_YMIN); };
+	bool soundsync() const { return bool_value(OPTION_SOUNDSYNC); };
+	bool cleanstretch() const { return bool_value(OPTION_CLEANSTRETCH); };
+	bool changeres() const { return bool_value(OPTION_CHANGERES); };
+	const char *redraw() const { return value(OPTION_REDRAW); };
+	const char *monitor_specs0() const { return value(OPTION_MONITOR_SPECS0); };
+	const char *monitor_specs1() const { return value(OPTION_MONITOR_SPECS1); };
+	const char *monitor_specs2() const { return value(OPTION_MONITOR_SPECS2); };
+	const char *monitor_specs3() const { return value(OPTION_MONITOR_SPECS3); };
+	const char *monitor_specs4() const { return value(OPTION_MONITOR_SPECS4); };
+	const char *monitor_specs5() const { return value(OPTION_MONITOR_SPECS5); };
+	const char *monitor_specs6() const { return value(OPTION_MONITOR_SPECS6); };
+	const char *monitor_specs7() const { return value(OPTION_MONITOR_SPECS7); };
 
 	// device-specific options
 	const char *device_option(device_image_interface &image);

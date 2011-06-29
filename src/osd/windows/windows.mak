@@ -296,7 +296,8 @@ OSDOBJS = \
 	$(WINOBJ)/video.o \
 	$(WINOBJ)/window.o \
 	$(WINOBJ)/winmenu.o \
-	$(WINOBJ)/winmain.o
+	$(WINOBJ)/winmain.o \
+	$(WINOBJ)/switchres.o
 
 ifeq ($(DIRECT3D),9)
 CCOMFLAGS += -DDIRECT3D_VERSION=0x0900

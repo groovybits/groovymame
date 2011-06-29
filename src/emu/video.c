@@ -248,7 +248,14 @@ void video_manager::frame_update(bool debug)
 
 	// ask the OSD to update
 	g_profiler.start(PROFILER_BLIT);
-	machine().osd().update(!debug && skipped_it);
+	//machine().osd().update(!debug && skipped_it);
+	if (machine().switchRes.cs.redraw == 0 || machine().speed_percent < 0.75)
+		machine().osd().update(!debug && skipped_it);
+	else {
+		int i;
+		for(i=0; i < machine().switchRes.cs.redraw; i++)
+			machine().osd().update(!debug && skipped_it);
+	}
 	g_profiler.stop();
 
 	// perform tasks for this frame
@@ -1080,6 +1087,9 @@ void video_manager::recompute_speed(attotime emutime)
 		osd_ticks_t delta_realtime = realtime - m_speed_last_realtime;
 		osd_ticks_t tps = osd_ticks_per_second();
 		m_speed_percent = delta_emutime.as_double() * (double)tps / (double)delta_realtime;
+
+		// Redraw patch
+		m_machine.speed_percent = m_speed_percent;
 
 		// remember the last times
 		m_speed_last_realtime = realtime;

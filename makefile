@@ -150,7 +150,7 @@ endif
 #-------------------------------------------------
 
 # uncomment and specify prefix to be added to the name
-# PREFIX =
+PREFIX = groovy
 
 # uncomment and specify suffix to be added to the name
 # SUFFIX =
