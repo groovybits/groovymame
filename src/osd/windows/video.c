@@ -225,6 +225,28 @@ void windows_osd_interface::update(bool skip_redraw)
 	check_osd_inputs(machine());
 }
 
+//============================================================
+//  MKCHAMP - BELOW IS THE NEW SUB CALLED FROM emu/video.c. ONLY
+//  DIFFERENCE BETWEEN THIS SUB AND osd_update IS IT CALLS NEW SUB CALLED winwindow_video_window_update_hi
+//  INSTEAD OF winwindow_video_window_update (located in osd/windows/window.c)
+//============================================================
+
+void windows_osd_interface::update_hi(bool skip_redraw)
+{
+	// ping the watchdog on each update
+	winmain_watchdog_ping();
+
+	// if we're not skipping this redraw, update all windows
+	if (!skip_redraw)
+		for (win_window_info *window = win_window_list; window != NULL; window = window->next)
+			winwindow_video_window_update_hi(window);
+
+	// poll the joystick values here
+	winwindow_process_events(machine(), TRUE);
+	wininput_poll(machine());
+	check_osd_inputs(machine());
+}
+
 
 
 //============================================================

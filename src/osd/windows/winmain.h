@@ -316,6 +316,9 @@ public:
 	virtual osd_font font_open(const char *name, int &height);
 	virtual void font_close(osd_font font);
 	virtual bitmap_t *font_get_bitmap(osd_font font, unicode_char chnum, INT32 &width, INT32 &xoffs, INT32 &yoffs);
+	
+	//MKChamp - Declaring hi subroutine
+	virtual void update_hi(bool skip_redraw);
 
 private:
 	static void osd_exit(running_machine &machine);

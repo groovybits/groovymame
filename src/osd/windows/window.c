@@ -825,6 +825,85 @@ void winwindow_video_window_update(win_window_info *window)
 	mtlog_add("winwindow_video_window_update: end");
 }
 
+//============================================================
+//  MKCHAMP - LAST OF THE NEW SUB CHAIN. FOR THOSE FOLLOWING, THE PATH IS:
+//  emu/ui.c->ui_set_startup_text CALLS emu/video.c->video_frame_update_hi WHICH CALLS
+//  osd/windows/video.c->osd_update_hi WHICH CALLS THIS SUB. 
+//  THE ONLY DIFFERENCE BETWEEN THIS SUB AND winwindow_video_window_update IS IT DOES NOT
+//  perform PostMessage(window->hwnd, WM_USER_REDRAW, 0, (LPARAM)primlist) OR
+//  SendMessage(window->hwnd, WM_USER_REDRAW, 0, (LPARAM)primlist)
+//  ALL THIS DOES IS ALLOW MAME TO PROPERLY RUN TO CALCULATE THE REFRESHSPEED/ETC. WITHOUT
+//  GIVING THE WHITE BOX THAT SEEMS TO ANNOY SOME PEOPLE!
+//============================================================
+
+void winwindow_video_window_update_hi(win_window_info *window)
+{
+	int targetview, targetorient;
+	render_layer_config targetlayerconfig;
+
+	assert(GetCurrentThreadId() == main_threadid);
+
+	mtlog_add("winwindow_video_window_update: begin");
+
+	// see if the target has changed significantly in window mode
+	targetview = window->target->view();
+	targetorient = window->target->orientation();
+	targetlayerconfig = window->target->layer_config();
+	if (targetview != window->targetview || targetorient != window->targetorient || targetlayerconfig != window->targetlayerconfig)
+	{
+		window->targetview = targetview;
+		window->targetorient = targetorient;
+		window->targetlayerconfig = targetlayerconfig;
+
+		// in window mode, reminimize/maximize
+		if (!window->fullscreen)
+		{
+			if (window->isminimized)
+				SendMessage(window->hwnd, WM_USER_SET_MINSIZE, 0, 0);
+			if (window->ismaximized)
+				SendMessage(window->hwnd, WM_USER_SET_MAXSIZE, 0, 0);
+		}
+	}
+
+	// if we're visible and running and not in the middle of a resize, draw
+	if (window->hwnd != NULL && window->target != NULL && window->drawdata != NULL)
+	{
+		int got_lock = TRUE;
+
+		mtlog_add("winwindow_video_window_update: try lock");
+
+		// only block if we're throttled
+		if (window->machine().video().throttled() || timeGetTime() - last_update_time > 250)
+			osd_lock_acquire(window->render_lock);
+		else
+			got_lock = osd_lock_try(window->render_lock);
+
+		// only render if we were able to get the lock
+		if (got_lock)
+		{
+			render_primitive_list *primlist;
+
+			mtlog_add("winwindow_video_window_update: got lock");
+
+			// don't hold the lock; we just used it to see if rendering was still happening
+			osd_lock_release(window->render_lock);
+
+			// ensure the target bounds are up-to-date, and then get the primitives
+			primlist = (*draw.window_get_primitives)(window);
+
+			// post a redraw request with the primitive list as a parameter
+			last_update_time = timeGetTime();
+			mtlog_add("winwindow_video_window_update: PostMessage start");
+			//if (multithreading_enabled)
+			//	PostMessage(window->hwnd, WM_USER_REDRAW, 0, (LPARAM)primlist);
+			//else
+			//	SendMessage(window->hwnd, WM_USER_REDRAW, 0, (LPARAM)primlist);
+			mtlog_add("winwindow_video_window_update: PostMessage end");
+		}
+	}
+
+	mtlog_add("winwindow_video_window_update: end");
+}
 
 
 //============================================================

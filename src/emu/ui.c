@@ -298,11 +298,17 @@ int ui_display_startup_screens(running_machine &machine, int first_time, int sho
 		switch (state)
 		{
 			case 0:
+				//MKCHAMP - BREAKING OUT SO DISCLAIMERS AREN'T SHOWN
+				if (! machine.options().disable_nagscreen_patch())
+  					break;
 				if (show_disclaimer && disclaimer_string(machine, messagebox_text).len() > 0)
 					ui_set_handler(handler_messagebox_ok, 0);
 				break;
 
 			case 1:
+				//MKCHAMP - BREAKING OUT SO WARNINGS AREN'T SHOWN
+  				if (! machine.options().disable_nagscreen_patch())
+  					break;
 				if (show_warnings && warnings_string(machine, messagebox_text).len() > 0)
 				{
 					ui_set_handler(handler_messagebox_ok, 0);
@@ -314,6 +320,9 @@ int ui_display_startup_screens(running_machine &machine, int first_time, int sho
 				break;
 
 			case 2:
+				//MKCHAMP - BREAKING OUT SO GAME INFO ISN'T SHOWN
+   				if (! machine.options().disable_nagscreen_patch())
+  					break;
 				if (show_gameinfo && game_info_astring(machine, messagebox_text).len() > 0)
 					ui_set_handler(handler_messagebox_anykey, 0);
 				break;
@@ -324,12 +333,18 @@ int ui_display_startup_screens(running_machine &machine, int first_time, int sho
 		while (machine.input().poll_switches() != INPUT_CODE_INVALID) ;
 
 		/* loop while we have a handler */
-		while (ui_handler_callback != handler_ingame && !machine.scheduled_event_pending() && !ui_menu_is_force_game_select())
-			machine.video().frame_update();
+		//MKChamp Disabling of whitebox
+ 		if (machine.options().disable_nagscreen_patch())
+ 		{
+			while (ui_handler_callback != handler_ingame && !machine.scheduled_event_pending() && !ui_menu_is_force_game_select())
+				machine.video().frame_update();
+		}
 
 		/* clear the handler and force an update */
 		ui_set_handler(handler_ingame, 0);
-		machine.video().frame_update();
+		//MKChamp Disabling of whitebox
+ 		if (machine.options().disable_nagscreen_patch())
+			machine.video().frame_update();
 	}
 
 	/* if we're the empty driver, force the menus on */
@@ -351,14 +366,22 @@ void ui_set_startup_text(running_machine &machine, const char *text, int force)
 	osd_ticks_t curtime = osd_ticks();
 
 	/* copy in the new text */
-	messagebox_text.cpy(text);
-	messagebox_backcolor = UI_BACKGROUND_COLOR;
+	//MKCHAMP -- DISABLE IS NOT DISABLED :-)
+ 	if (machine.options().disable_nagscreen_patch())
+ 	{
+		messagebox_text.cpy(text);
+		messagebox_backcolor = UI_BACKGROUND_COLOR;
+	}
 
 	/* don't update more than 4 times/second */
 	if (force || (curtime - lastupdatetime) > osd_ticks_per_second() / 4)
 	{
 		lastupdatetime = curtime;
-		machine.video().frame_update();
+		//MKCHAMP - CALLING NEW SUB CALLED video_frame_update_hi SO WHITE BOX DOES NOT SHOW BUT REFRESHSPEED IS STILL CALCULATED
+ 		if (! machine.options().disable_loading_patch())
+ 			machine.video().frame_update_hi();
+ 		else
+			machine.video().frame_update();
 	}
 }
 

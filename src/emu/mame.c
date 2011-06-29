@@ -81,6 +81,8 @@
 #include "profiler.h"
 #include "render.h"
 #include "cheat.h"
+//MKCHAMP - ADDING HEADER FILE HISCORE FOR INCLUSION
+#include "hiscore.h"
 #include "ui.h"
 #include "uimenu.h"
 #include "uiinput.h"

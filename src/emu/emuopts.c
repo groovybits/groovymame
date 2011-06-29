@@ -81,6 +81,10 @@ const options_entry emu_options::s_option_entries[] =
 	{ OPTION_SNAPSHOT_DIRECTORY,                         "snap",      OPTION_STRING,     "directory to save screenshots" },
 	{ OPTION_DIFF_DIRECTORY,                             "diff",      OPTION_STRING,     "directory to save hard drive image difference files" },
 	{ OPTION_COMMENT_DIRECTORY,                          "comments",  OPTION_STRING,     "directory to save debugger comments" },
+	
+	// MKCHAMP - ADDING CFG OPTION TO SPECIFY HISCORE DIRECTORY..."hi" BY DEFAULT
+	{ NULL,                                              NULL,        OPTION_HEADER,     "CORE OUTPUT DIRECTORY OPTIONS" },
+	{ OPTION_HISCORE_DIRECTORY,                          "hi",        OPTION_STRING,     "directory to save hiscores" },
 
 	// state/playback options
 	{ NULL,                                              NULL,        OPTION_HEADER,     "CORE STATE/PLAYBACK OPTIONS" },
@@ -190,7 +194,12 @@ const options_entry emu_options::s_option_entries[] =
 	{ OPTION_UI_FONT,                                    "default",   OPTION_STRING,     "specify a font to use" },
 	{ OPTION_RAMSIZE ";ram",                             NULL,        OPTION_STRING,     "size of RAM (if supported by driver)" },
 	{ OPTION_CONFIRM_QUIT,                               "0",         OPTION_BOOLEAN,    "display confirm quit screen on exit" },
-	{ NULL }
+	// MKChamp Hiscore Diff options 
+  { NULL,                        											 NULL,        OPTION_HEADER,     "CORE MKChamp OPTIONS" },
+  { OPTION_DISABLE_HISCORE_PATCH, 										 "0",         OPTION_BOOLEAN,    "disable hiscore saving" },
+  { OPTION_DISABLE_NAGSCREEN_PATCH,  									 "0",         OPTION_BOOLEAN,    "disable suppression of nagscreens" },
+  { OPTION_DISABLE_LOADING_PATCH,    									 "0",         OPTION_BOOLEAN,    "disable suppression of loading screens /white box" },
+  { NULL }
 };
 
 

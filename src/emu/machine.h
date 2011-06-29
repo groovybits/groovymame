@@ -405,6 +405,7 @@ public:
 
 	// CPU information
 	cpu_device *			firstcpu;			// first CPU (allows for quick iteration via typenext)
+	device_t *		cpu[8];             /*CPU for hiscore support */
 
 	// video-related information
 	gfx_element *			gfx[MAX_GFX_ELEMENTS];// array of pointers to graphic sets (chars, sprites)

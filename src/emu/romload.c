@@ -528,6 +528,10 @@ static void display_loading_rom_message(rom_load_data *romdata, const char *name
 
 	// 2010-04, FP - FIXME: in MESS, load_software_part_region sometimes calls this with romstotalsize = 0!
 	// as a temp workaround, I added a check for romstotalsize !=0.
+	//MKCHAMP - DISABLING WHOLE SUB ROUTINE TO ELIMINATE LOADING MESSAGES
+	//REMOVING ALWAYS
+ 	//if (!options_get_bool(mame_options(), OPTION_DISABLE_LOADING_PATCH))
+ 		return;
 	if (name != NULL && romdata->romstotalsize)
 		sprintf(buffer, "Loading (%d%%)", (UINT32)(100 * (UINT64)romdata->romsloadedsize / (UINT64)romdata->romstotalsize));
 	else

@@ -111,6 +111,7 @@ the decryption keys.
 *******************************************************************************/
 
 #include "emu.h"
+#include "emuopts.h"
 #include "cpu/m68000/m68000.h"
 #include "ui.h"
 #include "includes/cps1.h"
@@ -672,9 +673,13 @@ static void cps2_decrypt(running_machine &machine, const UINT32 *master_key, UIN
 
 		if ((i & 0xff) == 0)
 		{
-			char loadingMessage[256]; // for displaying with UI
-			sprintf(loadingMessage, "Decrypting %d%%", i*100/0x10000);
-			ui_set_startup_text(machine, loadingMessage,FALSE);
+			//MKCHAMP - DISABLING THE DECRYPING MESSAGE		
+			if (machine.options().disable_loading_patch())
+			{
+				char loadingMessage[256]; // for displaying with UI
+				sprintf(loadingMessage, "Decrypting %d%%", i*100/0x10000);
+				ui_set_startup_text(machine, loadingMessage,FALSE);
+			}
 		}
 
 

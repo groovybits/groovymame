@@ -151,6 +151,8 @@ void winwindow_video_window_create(running_machine &machine, int index, win_moni
 BOOL winwindow_has_focus(void);
 void winwindow_update_cursor_state(running_machine &machine);
 void winwindow_video_window_update(win_window_info *window);
+//MKCHAMP - DECLARING THE NEW SUB winwindow_video_window_update_hi
+void winwindow_video_window_update_hi(win_window_info *window);
 win_monitor_info *winwindow_video_window_monitor(win_window_info *window, const RECT *proposed);
 
 LRESULT CALLBACK winwindow_video_window_proc(HWND wnd, UINT message, WPARAM wparam, LPARAM lparam);
