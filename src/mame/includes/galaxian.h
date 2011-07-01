@@ -5,7 +5,7 @@
 ***************************************************************************/
 
 /* we scale horizontally by 3 to render stars correctly */
-#define GALAXIAN_XSCALE			3
+#define GALAXIAN_XSCALE			1 //frogger-galaxian fix
 
 /* master clocks */
 #define GALAXIAN_MASTER_CLOCK	(18432000)

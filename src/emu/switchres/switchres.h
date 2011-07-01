@@ -13,7 +13,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define SWITCHRES_VERSION "0.013"
+#define SWITCHRES_VERSION "0.013a"
 
 #define MAX_MODES 10
 #define MAX_MODELINES 250

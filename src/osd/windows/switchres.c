@@ -34,12 +34,14 @@
 #define DM_INTERLACED 0x00000002
 #define WM_USER_CHANGERES                      (WM_USER + 8)
 
+/*
 static void swap(int* a, int* b)
 {
     int temp = *a;
     *a = *b;
     *b = temp;
 }
+*/
 
 static DWORD RealRes( DWORD x) {
         return (int) (x / 8) * 8;
@@ -97,7 +99,7 @@ static void ResetVideoModes(void) {
 
 static int GetAvailableVideoModes(ModeLine VideoMode[MAX_MODELINES]) {
 	int iModeNum = 0, k = 0;
-	int i, j;
+	//int i, j;
 	HDC hDC;
 	DEVMODE lpDevMode;
 	LPCTSTR lpDriverName, lpDeviceName;
@@ -147,7 +149,7 @@ static int GetAvailableVideoModes(ModeLine VideoMode[MAX_MODELINES]) {
 	}
 	
 	DeleteDC(hDC);
-	
+/*	
 	for (i = 0; i < k; i++) {
 		for (j = i; j < k; j++) {
 			if (RealRes ( VideoMode[j].hactive ) <
@@ -173,7 +175,7 @@ static int GetAvailableVideoModes(ModeLine VideoMode[MAX_MODELINES]) {
 			}
 		}
 	}
-	
+*/	
 	return k;
 }
 
@@ -564,7 +566,7 @@ static int findBestMode(int orientation, ModeLine *mode, ModeLine modes[MAX_MODE
 		if (!modes[i].hactive)
 			break;
 		if (modes[i].score > 0) {
-			if (best_interlace_index == -1 && modes[i].interlace)
+			if (best_interlace_index == -1 && modes[i].interlace && !(modes[i].result & RESULT_VIRTUALIZE))
 				best_interlace_index = i;
 			else if (best_custom_index == -1 && modes[i].custom)
 				best_custom_index = i;
@@ -597,9 +599,9 @@ static int findBestMode(int orientation, ModeLine *mode, ModeLine modes[MAX_MODE
 				
 			}
 		}
-		mame_printf_verbose("SwitchRes: %d x %d -> %.02f %s\n",
-			modes[i].hactive, modes[i].vactive, modes[i].score,
-			modes[i].custom?"Custom Modeline":"System Modeline");
+		mame_printf_verbose("[%d]SwitchRes: %d x %d -> %.02f %s\n",
+			i, modes[i].hactive, modes[i].vactive, modes[i].score,
+			modes[i].custom?"Custom Modeline":"System Modeline" );
 	}
 	if (best_custom_index != -1)
 		best_index = best_custom_index;

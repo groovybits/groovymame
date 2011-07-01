@@ -375,18 +375,18 @@ void CalculateMameOptions(running_machine &machine)
 		mame_printf_verbose("SwitchRes: Setting Option -rotate\n");
 		machine.options().set_value(OPTION_ROTATE, true, OPTION_PRIORITY_MAXIMUM, error_string);
 		if (switchRes->gameInfo.orientation == 1) {
-			mame_printf_verbose("SwitchRes: Setting Option -autorol\n");
-			machine.options().set_value(OPTION_AUTOROL, true, OPTION_PRIORITY_MAXIMUM, error_string);
+			mame_printf_verbose("SwitchRes: Setting Option -autoror\n");
+			machine.options().set_value(OPTION_AUTOROR, true, OPTION_PRIORITY_MAXIMUM, error_string);
 		} else {
-			mame_printf_verbose("SwitchRes: Setting Option -rol\n");
-			machine.options().set_value(OPTION_ROL, true, OPTION_PRIORITY_MAXIMUM, error_string);
+			mame_printf_verbose("SwitchRes: Setting Option -ror\n");
+			machine.options().set_value(OPTION_ROR, true, OPTION_PRIORITY_MAXIMUM, error_string);
 		}
 	} else if (!strcmp(switchRes->cs.morientation, "rotate")) {
 		mame_printf_verbose("SwitchRes: Setting Option -rotate\n");
 		machine.options().set_value(OPTION_ROTATE, true, OPTION_PRIORITY_MAXIMUM, error_string);
 		if (switchRes->gameInfo.orientation == 1) {
-			mame_printf_verbose("SwitchRes: Setting Option -autorol\n");
-			machine.options().set_value(OPTION_AUTOROL, true, OPTION_PRIORITY_MAXIMUM, error_string);
+			mame_printf_verbose("SwitchRes: Setting Option -autoror\n");
+			machine.options().set_value(OPTION_AUTOROR, true, OPTION_PRIORITY_MAXIMUM, error_string);
 		}
 	}
 }

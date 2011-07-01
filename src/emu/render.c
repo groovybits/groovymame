@@ -1287,11 +1287,33 @@ void render_target::compute_visible_area(INT32 target_width, INT32 target_height
 {
 	float width, height;
 	float xscale, yscale;
+	INT32 iwidth, iheight;
+	
+	compute_minimum_size( iwidth, iheight);
+	
+	// Check for resolution changes
+	if (m_manager.machine().switchRes.resolution.width != 0) {
+		if (m_manager.machine().switchRes.resolution.width != iwidth ||
+		  m_manager.machine().switchRes.resolution.height != iheight)
+		{
+			mame_printf_verbose("SwitchRes: [%d] Resolution change from %dx%d to %dx%d\n",
+				m_manager.machine().switchRes.cs.changeres,
+				m_manager.machine().switchRes.resolution.width,
+				m_manager.machine().switchRes.resolution.height,
+				iwidth, iheight);
+
+			m_manager.machine().switchRes.resolution.width = iwidth;
+			m_manager.machine().switchRes.resolution.height = iheight;
+
+			m_manager.machine().switchRes.resolution.changeres = 1;
+		}
+	} else {
+		m_manager.machine().switchRes.resolution.width = iwidth;
+		m_manager.machine().switchRes.resolution.height = iheight;
+	}
 
 	if (m_manager.machine().switchRes.cs.cleanstretch) {
-		INT32 iwidth, iheight;
-
-		compute_minimum_size( iwidth, iheight);
+	
 		width = iwidth;
 		height = iheight;
 
@@ -1338,12 +1360,6 @@ void render_target::compute_visible_area(INT32 target_width, INT32 target_height
 		height = (float)target_height;
 		xscale = yscale = 1.0f;
 	}
-
-	// frogger/galaxian hack
-	if (width == 224 && height == 768)
-		height = 256;
-	if (width == 768 && height == 224)
-		width = 256;
 
 	// set the final width/height
 	visible_width = render_round_nearest(width * xscale);
@@ -1420,12 +1436,6 @@ void render_target::compute_minimum_size(INT32 &minwidth, INT32 &minheight)
 	// round up
 	minwidth = render_round_nearest(maxxscale);
 	minheight = render_round_nearest(maxyscale);
-
-	// frogger/galaxian hack
-	if (minwidth == 224 && minheight == 768)
-		minheight = 256;
-	if (minwidth == 768 && minheight == 224)
-		minwidth = 256;
 }
 
 
@@ -1452,27 +1462,6 @@ render_primitive_list &render_target::get_primitives()
 	INT32 viswidth, visheight;
 	compute_visible_area(m_width, m_height, m_pixel_aspect, m_orientation, viswidth, visheight);
 
-	// Check for resolution changes
-	if (m_manager.machine().switchRes.resolution.width != 0) {
-		if (m_manager.machine().switchRes.resolution.width != viswidth ||
-		  m_manager.machine().switchRes.resolution.height != visheight)
-		{
-			mame_printf_verbose("SwitchRes: [%d] Resolution change from %dx%d to %dx%d\n",
-				m_manager.machine().switchRes.cs.changeres,
-				m_manager.machine().switchRes.resolution.width,
-				m_manager.machine().switchRes.resolution.height,
-				viswidth, visheight);
-
-			m_manager.machine().switchRes.resolution.width = viswidth;
-			m_manager.machine().switchRes.resolution.height = visheight;
-
-			m_manager.machine().switchRes.resolution.changeres = 1;
-		}
-	} else {
-		m_manager.machine().switchRes.resolution.width = viswidth;
-		m_manager.machine().switchRes.resolution.height = visheight;
-	}
-
 	// create a root transform for the target
 	object_transform root_xform;
 	root_xform.xoffs = (float)(m_width - viswidth) / 2;
@@ -1481,7 +1470,7 @@ render_primitive_list &render_target::get_primitives()
 	root_xform.yscale = (float)visheight;
 	root_xform.color.r = root_xform.color.g = root_xform.color.b = root_xform.color.a = 1.0f;
 	root_xform.orientation = m_orientation;
-    root_xform.no_center = false;
+    	root_xform.no_center = false;
 
 	// iterate over layers back-to-front, but only if we're running
 	if (m_manager.machine().phase() >= MACHINE_PHASE_RESET)
@@ -1510,7 +1499,7 @@ render_primitive_list &render_target::get_primitives()
 					item_xform.color.b = curitem->color().b * root_xform.color.b;
 					item_xform.color.a = curitem->color().a * root_xform.color.a;
 					item_xform.orientation = orientation_add(curitem->orientation(), root_xform.orientation);
-                    item_xform.no_center = false;
+                    			item_xform.no_center = false;
 
 					// if there is no associated element, it must be a screen element
 					if (curitem->screen() != NULL)

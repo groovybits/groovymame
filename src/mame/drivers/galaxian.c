@@ -1998,7 +1998,7 @@ DISCRETE_SOUND_END
 static MACHINE_CONFIG_START( galaxian_base, galaxian_state )
 
 	/* basic machine hardware */
-	MCFG_CPU_ADD("maincpu", Z80, GALAXIAN_PIXEL_CLOCK/3/2)
+	MCFG_CPU_ADD("maincpu", Z80, GALAXIAN_PIXEL_CLOCK/GALAXIAN_XSCALE/2 ) // galaxian fix
 	MCFG_CPU_PROGRAM_MAP(galaxian_map)
 	MCFG_CPU_VBLANK_INT("screen", interrupt_gen)
 
@@ -2102,7 +2102,7 @@ static MACHINE_CONFIG_DERIVED( tenspot, galaxian )
 	MCFG_CPU_VBLANK_INT("screen", fakechange_interrupt_gen)
 
 	/* basic machine hardware */
-	MCFG_CPU_ADD("selectcpu", Z80, GALAXIAN_PIXEL_CLOCK/3/2) // ?? mhz
+	MCFG_CPU_ADD("selectcpu", Z80, GALAXIAN_PIXEL_CLOCK/GALAXIAN_XSCALE/2) // ?? mhz // galaxian fix
 	MCFG_CPU_PROGRAM_MAP(tenspot_select_map)
 	//MCFG_CPU_VBLANK_INT("screen", nmi_line_pulse)
 
@@ -2203,7 +2203,7 @@ static MACHINE_CONFIG_DERIVED( mshuttle, galaxian_base )
 	MCFG_CPU_IO_MAP(mshuttle_portmap)
 
 	/* sound hardware */
-	MCFG_SOUND_ADD("aysnd", AY8910, GALAXIAN_PIXEL_CLOCK/3/4)
+	MCFG_SOUND_ADD("aysnd", AY8910, GALAXIAN_PIXEL_CLOCK/GALAXIAN_XSCALE/4) // galaxian fix
 	MCFG_SOUND_CONFIG(cclimber_ay8910_interface)
 	MCFG_SOUND_ROUTE(ALL_OUTPUTS, "mono", 0.50)
 
