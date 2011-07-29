@@ -117,18 +117,16 @@ void calc_modeline(running_machine &machine)
 
 	/* Orientation */
 	if (!gameInfo->vector) {
+		int wx = gameInfo->width;
+		int hy = gameInfo->height;
 		if (gameInfo->orientation)
 		{       // orientation = vertical
-			int wx = gameInfo->width;
-			int hy = gameInfo->height;
-			if (!strcmp(cs->morientation, "horizontal")) {
+			if (!strcmp(cs->morientation, "horizontal") && resolution->width == 0) {
 				gameInfo->width = hy;
 				gameInfo->height = wx;
 			}
 		} else { // horizontal
-			if (!strcmp(cs->morientation, "vertical")) {
-				int wx = gameInfo->width;
-				int hy = gameInfo->height;
+			if (!strcmp(cs->morientation, "vertical") && resolution->width == 0) {
 				gameInfo->width = hy;
 				gameInfo->height = wx;
 			}
@@ -175,34 +173,34 @@ void calc_modeline(running_machine &machine)
         	monitorModeCnt = SetMonitorMode(cs->monitor, switchRes->monitorModes);
 	else {
         	monitorModeCnt = 0;
-		if (!FillMonitorMode(machine.options().monitor_specs0(), switchRes->monitorModes))
+		if (!FillMonitorMode(machine.options().monitor_specs0(), &switchRes->monitorModes[monitorModeCnt]))
         		monitorModeCnt++;
 		if (strcmp(machine.options().monitor_specs1(), "auto")) {
-			if (!FillMonitorMode(machine.options().monitor_specs1(), switchRes->monitorModes))
+			if (!FillMonitorMode(machine.options().monitor_specs1(), &switchRes->monitorModes[monitorModeCnt]))
         			monitorModeCnt++;
 		} 
 		if (strcmp(machine.options().monitor_specs2(), "auto")) {
-			if (!FillMonitorMode(machine.options().monitor_specs2(), switchRes->monitorModes))
+			if (!FillMonitorMode(machine.options().monitor_specs2(), &switchRes->monitorModes[monitorModeCnt]))
         			monitorModeCnt++;
 		} 
 		if (strcmp(machine.options().monitor_specs3(), "auto")) {
-			if (!FillMonitorMode(machine.options().monitor_specs3(), switchRes->monitorModes))
+			if (!FillMonitorMode(machine.options().monitor_specs3(), &switchRes->monitorModes[monitorModeCnt]))
         			monitorModeCnt++;
 		} 
 		if (strcmp(machine.options().monitor_specs4(), "auto")) {
-			if (!FillMonitorMode(machine.options().monitor_specs4(), switchRes->monitorModes))
+			if (!FillMonitorMode(machine.options().monitor_specs4(), &switchRes->monitorModes[monitorModeCnt]))
         			monitorModeCnt++;
 		} 
 		if (strcmp(machine.options().monitor_specs5(), "auto")) {
-			if (!FillMonitorMode(machine.options().monitor_specs5(), switchRes->monitorModes))
+			if (!FillMonitorMode(machine.options().monitor_specs5(), &switchRes->monitorModes[monitorModeCnt]))
         			monitorModeCnt++;
 		} 
 		if (strcmp(machine.options().monitor_specs6(), "auto")) {
-			if (!FillMonitorMode(machine.options().monitor_specs6(), switchRes->monitorModes))
+			if (!FillMonitorMode(machine.options().monitor_specs6(), &switchRes->monitorModes[monitorModeCnt]))
         			monitorModeCnt++;
 		} 
 		if (strcmp(machine.options().monitor_specs7(), "auto")) {
-			if (!FillMonitorMode(machine.options().monitor_specs7(), switchRes->monitorModes))
+			if (!FillMonitorMode(machine.options().monitor_specs7(), &switchRes->monitorModes[monitorModeCnt]))
         			monitorModeCnt++;
 		} 
 		if (!monitorModeCnt) {

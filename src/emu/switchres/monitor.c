@@ -48,16 +48,16 @@ int SetMonitorMode(char *type, MonitorMode monitor[MAX_MODES]) {
 		monitor[0].HfreqMax = 40000;
 		monitor[0].VfreqMin = 47;
 		monitor[0].VfreqMax = 90;
-		monitor[4].HfrontPorch = 0.636;
-		monitor[4].HsyncPulse  = 3.813;
-		monitor[4].HbackPorch  = 1.906;
-		monitor[4].VfrontPorch = 0.020;
-		monitor[4].VsyncPulse  = 0.106;
-		monitor[4].VbackPorch  = 0.607;
-		monitor[4].HsyncPolarity = 1;
-		monitor[4].VsyncPolarity = 1;
-		monitor[4].ActiveLinesLimit = 576;
-		monitor[4].VirtualLinesLimit = 768;
+                monitor[0].HfrontPorch = 0.636;
+                monitor[0].HsyncPulse  = 3.813;
+                monitor[0].HbackPorch  = 1.906;
+                monitor[0].VfrontPorch = 0.020;
+                monitor[0].VsyncPulse  = 0.106;
+                monitor[0].VbackPorch  = 0.607;
+                monitor[0].HsyncPolarity = 1;
+                monitor[0].VsyncPolarity = 1;
+                monitor[0].ActiveLinesLimit = 576;
+                monitor[0].VirtualLinesLimit = 768;
 		return 1;
 	} else if (!strcmp(type, "d9800") || !strcmp(type, "d9400")) {
 		/* CGA */
